@@ -10,6 +10,10 @@ const cocktailSchema = new Schema({
     },
     shaken: {
         type: Boolean
+    }, 
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
     }
 })
 
