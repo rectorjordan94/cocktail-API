@@ -7,6 +7,14 @@ const bcrypt = require('bcryptjs')
 const router = express.Router()
 
 //! Routes
+//* GET -> users/signup
+// this renders a liquid page with the sign up form
+router.get('/signup', (req, res) => {
+    res.render('users/signup')
+})
+
+//* POST -> /users/signup
+// this route creates new users in our db
 router.post('/signup', async (req, res) => {
     // this route will take a req.body and use that data to create a user
     const newUser = req.body
@@ -19,12 +27,17 @@ router.post('/signup', async (req, res) => {
     User.create(newUser)
         .then(user => {
             // if successful send a 201 status
-            res.status(201).json({username: user.username})
+            res.redirect('/users/login')
         })
         .catch(err => {
             console.log(err)
-            res.json(err)
+            res.redirect(`/error?error=username%20taken`)
         })
+})
+
+//* GET -> /users/login
+router.get('/login', (req, res) => {
+    res.render('users/login')
 })
 
 //* POST -> /users/login
@@ -43,18 +56,24 @@ router.post('/login', async (req, res) => {
                     req.session.loggedIn = true
                     req.session.userId = user.id
                     // send 201 response and the user as json
-                    res.status(201).json({ username: user.username})
+                    res.redirect('/')
                 } else {
-                    res.json({ error: 'username or password is incorrect'})
+                    res.redirect(`/error?error=username%20or%20password%20is%20incorrect`)
                 }
             } else {
-                res.json({ error: 'user does not exist'})
+                res.redirect(`/error?error=user%20does%20not%20exist`)
             }
         })
         .catch(err => {
             console.log(err)
-            res.json(err)
+            res.redirect(`/error?error=${err}`)
         })
+})
+
+//* GET -> /users/logout
+// this route renders a page that allows the user to log out
+router.get('/logout', (req,res) => {
+    res.render('users/logout')
 })
 
 //* DELETE -> /users/logout
@@ -64,7 +83,7 @@ router.delete('/logout', (req, res) => {
     req.session.destroy(() => {
         console.log('this is req.session upon logout \n', req.session)
         // eventually we will redirect users here, but thats after adding the view layer
-        res.sendStatus(204)
+        res.redirect('/')
     })
 })
 

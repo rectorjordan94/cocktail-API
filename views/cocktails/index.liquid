@@ -1,0 +1,17 @@
+{% layout 'layout.liquid' %}
+{% block content %}
+    <!-- we need to account for two conditions here -->
+    <!--first, if we have fruits in our array -->
+    <!-- second, if there are no fruits in the array-->
+    {% if cocktails.length > 0 %}
+        <h2>All Cocktails</h2>
+        <ul>
+            {% for cocktail in cocktails %}
+                <li>{{ cocktail.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h2>No cocktails yet... Go create some!</h2>
+    {% endif %}
+{% endblock %}
+

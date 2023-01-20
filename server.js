@@ -8,19 +8,28 @@ const CommentRouter = require('./controllers/commentControllers')
 const middleware = require('./utils/middleware')
 
 //! Create Express App Object
-const app = express()
+const app = require('liquid-express-views')(express())
 
 //! Middleware
 middleware(app)
 
 //! Routes
 app.get('/', (req, res) => {
-    res.send('SERVER IS LIVE')
+    res.render('home.liquid')
 })
 
 app.use('/cocktails', CocktailRouter)
 app.use('/users', UserRouter)
 app.use('/comments', CommentRouter)
+
+app.get('/error', (req, res) => {
+    const error = req.query.error || 'This page does not exist'
+    res.render('error.liquid', { error })
+})
+
+app.all('*', (req, res) => {
+    res.redirect('/error')
+})
 
 //! Server Listener
 const PORT = process.env.PORT

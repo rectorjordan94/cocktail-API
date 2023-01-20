@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     Cocktail.find({})
         .populate('owner', 'username')
         .populate('comments.author', '-password')
-        .then(cocktails => { res.json({ cocktails: cocktails }) })
+        .then(cocktails => { res.render('cocktails/index', { cocktails }) })
         .catch(err => {
             console.log(err)
             res.status(400).json(err)
