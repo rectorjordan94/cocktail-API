@@ -1,5 +1,6 @@
 const mongoose = require('../utils/connection')
 const { Schema, model } = mongoose
+const commentSchema = require('./comment')
 
 const cocktailSchema = new Schema({
     name: {
@@ -14,7 +15,8 @@ const cocktailSchema = new Schema({
     owner: {
         type: Schema.Types.ObjectId,
         ref: 'User'
-    }
+    },
+    comments: [commentSchema]
 })
 
 const Cocktail = model('Cocktail', cocktailSchema)

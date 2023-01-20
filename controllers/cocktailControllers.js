@@ -9,6 +9,8 @@ const router = express.Router()
 // finds and displays all cocktails
 router.get('/', (req, res) => {
     Cocktail.find({})
+        .populate('owner', 'username')
+        .populate('comments.author', '-password')
         .then(cocktails => { res.json({ cocktails: cocktails }) })
         .catch(err => {
             console.log(err)
@@ -36,6 +38,7 @@ router.post('/', (req, res) => {
 router.get('/mine', (req, res) => {
     Cocktail.find({ owner: req.session.userId })
         .populate('owner', 'username')
+        .populate('comments.author', '-password')
         .then(cocktails => {
             // if found display the cocktails
             res.status(200).json({ cocktails: cocktails})
@@ -98,6 +101,7 @@ router.get('/:id', (req, res) => {
     const id = req.params.id
     // use a mongoose method to find using that id
     Cocktail.findById(id)
+        .populate('comments.author', 'username')
         .then(cocktail => {
             res.json({cocktail: cocktail})
         })

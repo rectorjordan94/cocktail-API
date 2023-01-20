@@ -4,6 +4,7 @@ require('dotenv').config()
 const path = require('path')
 const CocktailRouter = require('./controllers/cocktailControllers')
 const UserRouter = require('./controllers/userController')
+const CommentRouter = require('./controllers/commentControllers')
 const middleware = require('./utils/middleware')
 
 //! Create Express App Object
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/cocktails', CocktailRouter)
 app.use('/users', UserRouter)
+app.use('/comments', CommentRouter)
 
 //! Server Listener
 const PORT = process.env.PORT
