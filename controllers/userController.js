@@ -73,7 +73,7 @@ router.post('/login', async (req, res) => {
 //* GET -> /users/logout
 // this route renders a page that allows the user to log out
 router.get('/logout', (req,res) => {
-    res.render('users/logout')
+    res.render('users/logout', {...req.session})
 })
 
 //* DELETE -> /users/logout

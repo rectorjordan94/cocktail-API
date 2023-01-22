@@ -11,25 +11,31 @@ router.get('/', (req, res) => {
     Cocktail.find({})
         .populate('owner', 'username')
         .populate('comments.author', '-password')
-        .then(cocktails => { res.render('cocktails/index', { cocktails }) })
+        .then(cocktails => { res.render('cocktails/index', { cocktails, ...req.session }) })
         .catch(err => {
             console.log(err)
-            res.status(400).json(err)
+            res.redirect(`error?error=${err}`)
         })
+})
+
+//* GET -> new page
+router.get('/new', (req, res) => {
+    res.render('cocktails/new', {...req.session})
 })
 
 //* CREATE route
 // Create -> receives a request body, and creates a new document in the database
 router.post('/', (req, res) => {
     req.body.owner = req.session.userId
+    req.body.shaken = req.body.shaken === 'on' ? true: false
     const newCocktail = req.body
     Cocktail.create(newCocktail)
         .then(cocktail => {
             // send a 201 status, along with the json response of the new fruit
-            res.status(201).json({cocktail: cocktail.toObject()})
+            res.redirect('/cocktails/mine')
         })
         .catch(err => {
-            console.log(err)
+            res.redirect(`/error?error=${err}`)
         })
 })
 
@@ -41,11 +47,23 @@ router.get('/mine', (req, res) => {
         .populate('comments.author', '-password')
         .then(cocktails => {
             // if found display the cocktails
-            res.status(200).json({ cocktails: cocktails})
+            res.render('cocktails/index', {cocktails, ...req.session})
         })
         .catch(err => {
             console.log(err)
-            res.status(400).json(err)
+            res.redirect(`error?error=${err}`)
+        })
+})
+
+//* GET -> EDIT
+router.get('/edit/:id', (req, res) => {
+    const cocktailId = req.params.id
+    Cocktail.findById(cocktailId)
+        .then(cocktail => {
+            res.render('cocktails/edit', {cocktail, ...req.session})
+        })
+        .catch(err => {
+            res.redirect(`/error?error=${err}`)
         })
 })
 
@@ -54,21 +72,24 @@ router.get('/mine', (req, res) => {
 // PUT replaces the entire document with a new document from the req.body
 router.put('/:id', (req, res) => {
 	// get the id from the request url
-	const cocktailId = req.params.id
+    const id = req.params.id
+    req.body.shaken = req.body.shaken === 'on' ? true: false
 	// tell mongoose to update the fruit
-	Cocktail.findById(cocktailId)
+	Cocktail.findById(id)
     .then(cocktail => {
         if (cocktail.owner == req.session.userId) {
             return cocktail.updateOne(req.body)
+        } else {
+            res.redirect(`error?error=You%20are%20not%20allowed%20to%20edit%20this%20cocktail`)
         }
     })
-		// if successful -> send status
-		.then(cocktail => {
-			console.log('the updated cocktail', cocktail)
-			res.sendStatus(204)
-		})
-		// if an error, display that
-		.catch((error) => res.json(error))
+	.then(cocktail => {
+		res.redirect('/cocktails/mine')
+	})
+	// if an error, display that
+    .catch((err) => {
+        res.redirect(`/error?error=${err}`)
+    })
 })
 
 
@@ -86,11 +107,11 @@ router.delete('/:id', (req, res) => {
             }
         })
         .then(() => {
-            res.sendStatus(204)
+            res.redirect('/cocktails/mine')
         })
-        .catch((error) => {
-            console.log(error)
-            res.json({ error })
+        .catch((err) => {
+            console.log(err)
+            res.redirect(`/error?error=${err}`)
         })
 })
 
@@ -103,11 +124,11 @@ router.get('/:id', (req, res) => {
     Cocktail.findById(id)
         .populate('comments.author', 'username')
         .then(cocktail => {
-            res.json({cocktail: cocktail})
+            res.render('cocktails/show', {cocktail, ...req.session})
         })
         .catch(err => {
             console.log(err)
-            res.status(400).json(err)
+            res.redirect(`/error?error=${err}`)
         })
 })
 

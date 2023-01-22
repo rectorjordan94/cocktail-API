@@ -18,14 +18,14 @@ router.post('/:cocktailId', (req, res) => {
                 return cocktail.save()
             })
             .then(cocktail => {
-                res.status(201).json({ cocktail: cocktail })
+                res.redirect(`/cocktails/${cocktail.id}`)
             })
             .catch(err => {
                 console.log(err)
-                res.status(400).json(err)
+                res.redirect(`/error?error=${err}`)
             })
     } else {
-        res.sendStatus(401)
+        res.redirect(`/error?error=You%20are%20not%20allowed%20to%20comment%20on%20this%20cocktail`)
     }
 })
 
@@ -36,20 +36,21 @@ router.delete('/delete/:cocktailId/:commId', (req, res) => {
     Cocktail.findById(cocktailId)
         .then(cocktail => {
             const theComment = cocktail.comments.id(commId)
-            if (theComment.author = req.session.userId) {
-                theComment.remove()
-                return cocktail.save()
+            if (req.session.loggedIn) {
+                if (theComment.author == req.session.userId) {
+                    theComment.remove()
+                    cocktail.save()
+                    res.redirect(`/cocktails/${cocktail.id}`)
+                } else {
+                    res.redirect(`/error?error=You%20are%20not%20allowed%20to%delete%20this%comment`)
+                }
             } else {
-                return
+                res.redirect(`/error?error=You%20are%20not%20allowed%20to%delete%20this%comment`)
             }
-        })
-        .then(cocktail => {
-            console.log('updated cocktail', cocktail)
-            res.sendStatus(204)
         })
         .catch(err => {
             console.log(err)
-            res.send(err)
+            res.redirect(`/error?error=${err}`)
         })
 })
 

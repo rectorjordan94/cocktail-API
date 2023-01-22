@@ -4,14 +4,39 @@
     <!--first, if we have fruits in our array -->
     <!-- second, if there are no fruits in the array-->
     {% if cocktails.length > 0 %}
-        <h2>All Cocktails</h2>
-        <ul>
-            {% for cocktail in cocktails %}
-                <li>{{ cocktail.name }}</li>
-            {% endfor %}
-        </ul>
+        <div class="container-md">
+            <h2>All Cocktails</h2>
+                <div class="row">
+                    {% for cocktail in cocktails %}
+                        <div class="card me-3 mb-3" style="width: 18rem">
+                            <h5 class="card-header">{{cocktail.name}}</h5>
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <h6 class="card-title">{{cocktail.baseSpirit}}</h6>
+                                    {% if cocktail.shaken %}
+                                        Shaken
+                                    {% else %}
+                                        Stirred
+                                    {% endif %}
+                                </div>
+                                <a href="/cocktails/{{cocktail.id}}" class="btn btn-info">View</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+
+
+        </div>
+        
+        
+            
+    
     {% else %}
+    <div class="container-md">
         <h2>No cocktails yet... Go create some!</h2>
+    </div>
     {% endif %}
 {% endblock %}
 

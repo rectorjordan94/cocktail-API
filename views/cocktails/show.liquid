@@ -1,0 +1,46 @@
+{% layout 'layout.liquid' %}
+{% block content %}
+<div class="container-md bg-light">
+    <h2>{{cocktail.name}}</h2>
+    <h5>Base Spirit: {{cocktail.baseSpirit}}</h5>
+    {% if cocktail.owner == userId %}
+            <hr>
+                <div class="btn-group">
+                    {%-comment-%}
+                    first button will take us to the edit page
+                    second will actually be a form, that calls our delete route
+                    {%-endcomment-%}
+                    <a href="/cocktails/edit/{{cocktail.id}}" class="btn btn-primary me-3">Edit {{cocktail.name}}</a>
+                    <form action="/cocktails/{{cocktail.id}}?_method=DELETE" method="POST">
+                        <input type="submit" class="btn btn-danger" value="Delete {{cocktail.name}}">
+                    </form>
+                </div>
+            {% endif %}
+    {% if loggedIn %}
+            <div class="col-md-6">
+                <form action="/comments/{{cocktail.id}}" method="POST">
+                    <fieldset>
+                        <legend>New Comment</legend>
+                        <label class="form-label">Comment:</label>
+                        <input type="text" name="note" class="form-control mb-1">
+                    </fieldset>
+                    <input type="submit" class="btn btn-success" value="Add Comment">
+                </form>
+            </div>
+        {% else %}
+            <div class="col-md-6">
+                <small>If you'd like to leave a comment, please log in...</small>
+            </div>
+        {% endif %}
+        <hr>
+        {% if cocktail.comments.length > 0 %}
+            <div class="container-sm justify-content-center">
+                {% for comm in cocktail.comments %}
+                    {% render '../comment.liquid', comm: comm, userId: userId, cocktail: cocktail %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <small>No comments yet...</small>
+        {% endif %}
+</div>
+{% endblock %}

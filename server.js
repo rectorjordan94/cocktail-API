@@ -15,7 +15,8 @@ middleware(app)
 
 //! Routes
 app.get('/', (req, res) => {
-    res.render('home.liquid')
+    const { username, loggedIn, userId} = req.session
+    res.render('home.liquid', { username, loggedIn, userId })
 })
 
 app.use('/cocktails', CocktailRouter)
@@ -24,7 +25,7 @@ app.use('/comments', CommentRouter)
 
 app.get('/error', (req, res) => {
     const error = req.query.error || 'This page does not exist'
-    res.render('error.liquid', { error })
+    res.render('error.liquid', { error, ...req.session })
 })
 
 app.all('*', (req, res) => {

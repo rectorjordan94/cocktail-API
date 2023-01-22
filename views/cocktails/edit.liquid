@@ -1,0 +1,29 @@
+{% layout 'layout.liquid' %}
+{% block content %}
+    <div class="container-sm">
+        <form action="/cocktails/{{cocktail.id}}?_method=PUT" method="POST">
+            <fieldset>
+                <legend>Edit {{cocktail.name}}</legend>
+                <label class="form-label">Name:</label>
+                <input 
+                    type="text" class="form-control" 
+                    name="name" required 
+                    placeholder="What kind of cocktail is it?" value="{{cocktail.name}}">
+                <label class="form-label">Color:</label>
+                <input 
+                    type="text" class="form-control" 
+                    name="baseSpirit" required 
+                    placeholder="What is the base spirit?" value="{{cocktail.baseSpirit}}">
+                <label class="form-label">Shaken?</label>
+                <input 
+                    type="checkbox" class="form-check-control" 
+                    name="shaken" 
+                    {% if cocktail.shaken %}
+                        checked
+                    {% endif %}>
+            </fieldset>
+            <input type="submit" class="btn btn-success" value="Edit {{cocktail.name}}">
+            <a href="/cocktails/{{cocktail.id}}" class="btn btn-warning">Back</a>
+        </form>
+    </div>
+{% endblock %}
